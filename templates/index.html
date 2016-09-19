@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<title>ACM Rank</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+<script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+</head>
+<body>
+<div class="container">
+<table class="table table-hover">
+	<tr>
+		<td>排名</td>
+		<td>ID</td>
+		<td>姓名</td>
+		<td>电子邮件</td>
+		<td>解决问题总数</td>
+		<td>总提交数</td>
+		<td>上周解决数量</td>
+		<td>最后提交时间</td>
+		<td>操作</td>
+	<tr>
+{% for acmer in acmers %}
+	<tr>
+		<td class="rank"></td>
+		<td>{{ acmer.id }}</td>
+		<td>{{ acmer.name }}</td>
+		<td>{{ acmer.email }}</td>
+		<td>{{ acmer.solved }}</td>
+		<td>{{ acmer.submissions }}</td>
+		<td>{{ acmer.last_week_solved }}</td>
+		<td>{{ acmer.last_submit_time }}</td>
+		<td>
+			<div class="btn-group">
+				<button class="btn btn-success dropdown-toggle" data-toggle="dropdown" onclick="$(:'input').onfocus()">更新</button>
+				<ul class="dropdown-menu">
+					<li>
+						<form method="post">
+						<input type="hidden" name="id" value="{{ acmer.id }}">
+						<input type="hidden" name="type" value="update">
+						<input type="password" name="password" class="form-control" placeholder="POJ Password" />
+						<input type="submit" class="btn btn-success" value="确定" />
+						</form>
+					</li>
+				</ul>
+			</div>
+			<div class="btn-group">
+				<button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">删除</button>
+				<ul class="dropdown-menu">
+					<li>
+						<form method="post">
+						<input type="hidden" name="id" value="{{ acmer.id }}">
+						<input type="hidden" name="type" value="delete">
+						<input type="password" name="password" class="form-control" placeholder="POJ Password" autofocus="true" />
+						<input type="submit" class="btn btn-success" value="确定" />
+						</form>
+					</li>
+				</ul>
+			</div>
+			<!--
+			<div>
+			<input type="password" class="form-control" placeholder="POJ Password" />
+			<input type="submit" class="btn btn-success" value="确定" onclick="this.hidden()" />
+			<input type="submit" class="btn btn-success" value="取消" />
+			</div>
+			-->
+		</td>
+	</tr>
+{% endfor %}
+</table>
+<button type="button" class="btn btn-primary btn-lg center-block" data-toggle="modal" data-target="#myModal">我要加入！</button>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="myModalLabel">信息确认</h4>
+			</div>
+			<form method="post">
+				<div class="modal-body">
+					<input type="hidden" name="type" value="add">
+					<label>姓名：</label><input type="text" name="name" class="form-control" placeholder="">
+					<label>电子邮件：</label><input type="email" name="email" class="form-control" placeholder="">
+					<label>POJ帐号：</label><input type="text" name="id" class="form-control" placeholder="">
+					<label>POJ密码：</label><input type="password" name="password" class="form-control" placeholder="">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<input type="submit" class="btn btn-primary">
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+<script>
+	var ranks = document.getElementsByClassName('rank');
+	for(var i = 0; i < ranks.length; i++) {
+		ranks[i].innerHTML = i + 1;
+	}
+	function update(id, password) {
+		
+	}
+</script>
+</body>
+</html>
+
+
+
+
+
+

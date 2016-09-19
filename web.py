@@ -1,4 +1,5 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template, g, request
+from flask_bootstrap import Bootstrap
 from bs4 import BeautifulSoup
 import sqlite3
 import urllib
@@ -6,6 +7,7 @@ import time
 import re
 
 app = Flask(__name__)
+#Bootstrap(app)
 
 DATABASE = 'database.db'
 
@@ -38,6 +40,7 @@ def execute(query, args=()):
         db.commit()
         return True
     except:
+        raise
         return False
 
 def install():
@@ -62,63 +65,103 @@ class Acmer:
         self.email = acmer['email']
         self.solved = acmer['solved']
         self.submissions = acmer['submissions']
-        self.solved_problem_list = acmer['solved_problem_list'].split()
+        self.solved_problem_list = acmer['solved_problem_list']
         self.last_submit_time = acmer['last_submit_time']
         self.update_time = acmer['update_time']
         self.last_week_solved = acmer['last_week_solved']
         self.status = acmer['status']
+    
+    @staticmethod
+    def new(id):
+        acmer = query('select * from `acmers` where id=?', (id,), one=True)
+        if acmer is None:
+            return None
+        return Acmer(acmer)
 
     def update(self):
         try:
-            url = "http://poj.org/userstatus?user_id=" + self.user_id
-            html = get_html(url)
-            soup = BeautifulSoup(html, 'html.parser')
+            url = "http://poj.org/userstatus?user_id=" + self.id
+            soup = BeautifulSoup(get_html(url), 'html.parser')
             self.solved = soup.find(text='Solved:').find_next().a.string
             self.submissions = soup.find(text='Submissions:').find_next().a.string
             p_str = re.sub(r'\D', ' ', soup.find(text=re.compile(r'function p')))
-            self.solved_problem_list = p_str.split()
-            self.last_submit_time = 0
-            self.update_time = time.time()
+            self.solved_problem_list = ' '.join(p_str.split())
+            submit_times = re.findall(r'<td>(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)</td>', get_html(url))
+            if submit_times is None:
+                self.last_submit_time = '9999-12-31 23:59:59'
+            else:
+                self.last_submit_time = '2016-08-04 09:16:05'
+            self.update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            self.save()
             return True
         except:
+            raise
             return False
     
-    def save(args=()):
-        if args == ():
-            execute("update `acmers` set `name`=?, `email`=?, `solved`=?, `submissions`=?, `solved_problem_list`=?, `last_submit_time`=?, `update_time`=?, `last_week_solved`=?, `status`=? where `id`=" + self.id, (self.name, self.email, self.solved, self.submissions, self.solved_problem_list, self.last_submit_time, self.update_time, self.last_week_solved, self.stauts))
-        else:
-            execute('update `acmers` set ' + ', '.join('`' + s + '`=?' for s in args) + ' where id=' + self.id, args)
+    def save(self):
+        execute("update `acmers` set `name`=?, `email`=?, `solved`=?, `submissions`=?, `solved_problem_list`=?, `last_submit_time`=?, `update_time`=?, `last_week_solved`=?, `status`=? where `id`=?", (self.name, self.email, self.solved, self.submissions, self.solved_problem_list, self.last_submit_time, self.update_time, self.last_week_solved, self.status, self.id))
 
-def get_acmer(user_id):
-    return query('select * from acmers where id=?', (user_id,), one=True)
+    @staticmethod
+    def all_acmers():
+        acmers = []
+        for acmer in query('select id from acmers order by `solved` desc'):
+            acmers.append(Acmer.new(acmer['id']))
+        return acmers
 
-@app.route('/')
+def check_id(id, password):
+    cp = urllib.request.HTTPCookieProcessor()
+    opener = urllib.request.build_opener(cp)
+    urllib.request.install_opener(opener)
+    try:
+        req = urllib.request.Request('http://poj.org/login', ('user_id1=%s&password1=%s' % (id, password)).encode())
+        urllib.request.urlopen(req, timeout=3)
+        if re.search('Log Out', get_html('http://poj.org/login')) is None:
+            return False
+        return True
+    except:
+        return False
+
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    acmer = Acmer()
-    acmer.update()
-    return acmer.solved + ' ' + acmer.submissions + ' ' + ' '.join(acmer.solved_problem_list)
+    if request.method == 'POST' and check_id(request.form['id'], request.form['password']):
+        id = request.form['id']
+        if request.form['type'] == 'add':
+            if Acmer.new(id) is None:
+                name = request.form['name']
+                email = request.form['email']
+                execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
+                Acmer.new(id).update()
+        elif request.form['type'] == 'update':
+            acmer = Acmer.new(id)
+            if acmer is not None:
+                acmer.update()
+        elif request.form['type'] == 'delete':
+            execute('delete from `acmers` where `id`=?', (id,))
+    acmers = Acmer.all_acmers()
+    return render_template('index.html', acmers=acmers)
 
-@app.route('/<user_id>')
-def problem(user_id):
-    acmer = get_acmer(user_id)
+@app.route('/updateall')
+def updateall():
+    acmers = Acmer.all_acmers()
+    for acmer in acmers:
+        acmer.update()
+    return render_template('index.html', acmers=acmers)
+    return 'update successful!'
+
+@app.route('/update/<id>')
+def update(id):
+    acmer = Acmer.new(id)
     if acmer is None:
-        return 'user_id不正确！'
+        return 'id不正确！'
     else:
-        return acmer['name']
-
-@app.route('/test_insert')
-def test_insert():
-    if not execute("insert into acmers (`id`, `name`, `email`, `solved`, `submissions`, `solved_problem_list`, `last_submit_time`, `update_time`, `last_week_solved`, `status`) values ('QHearting', '张国庆', 'netcon@live.com', 3, 6, '1001 1002 1003', 1473779369, 1473779369, 2, 1)"):
-        return 'False'
-    return 'insert'
-
-@app.route('/test_select')
-def test_select():
-    acmers = query("select * from acmers")
-    return ','.join([acmer['id'] for acmer in acmers])
+        acmer.update()
+        return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
 
 if __name__ == '__main__':
     app.run(debug=True)
-    #open('web.html', 'w').write(get_solved_number('QHearting'))
+
+
+
 
 
