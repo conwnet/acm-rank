@@ -1,4 +1,4 @@
-from flask import Flask, render_template, g, request
+from flask import Flask, render_template, g, request, flash, redirect
 from bs4 import BeautifulSoup
 import sqlite3
 import urllib
@@ -6,7 +6,7 @@ import time
 import re
 
 app = Flask(__name__)
-#Bootstrap(app)
+app.secret_key = 'Author:netcon'
 
 DATABASE = 'database.db'
 
@@ -39,7 +39,6 @@ def execute(query, args=()):
         db.commit()
         return True
     except:
-        raise
         return False
 
 def install():
@@ -89,12 +88,11 @@ class Acmer:
             if submit_times is None:
                 self.last_submit_time = '9999-12-31 23:59:59'
             else:
-                self.last_submit_time = '2016-08-04 09:16:05'
+                self.last_submit_time = submit_times
             self.update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             self.save()
             return True
         except:
-            raise
             return False
     
     def save(self):
@@ -117,15 +115,19 @@ def check_id(id, password):
         req = urllib.request.Request('http://poj.org/login', ('user_id1=%s&password1=%s' % (id, password)).encode())
         with urllib.request.urlopen(req, timeout=3):
             if re.search('Log Out', get_html('http://poj.org/login')) is None:
-                return False
-        return True
+                return 1
+        return 0
     except:
-        return False
+        return 2
 
-
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST' and check_id(request.form['id'], request.form['password']):
+@app.route('/handle', methods=['POST'])
+def handle():
+    check = check_id(request.form['id'], request.form['password'])
+    if check == 1:
+        flash('密码不正确！')
+    elif check == 2:
+        flash('POJ目前不可用，请稍后再试！')
+    elif request.method == 'POST':
         id = request.form['id']
         if request.form['type'] == 'add':
             if Acmer.new(id) is None:
@@ -133,12 +135,21 @@ def index():
                 email = request.form['email']
                 execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
                 Acmer.new(id).update()
+                flash('添加成功！')
         elif request.form['type'] == 'update':
             acmer = Acmer.new(id)
             if acmer is not None:
                 acmer.update()
+            flash('更新成功！')
         elif request.form['type'] == 'delete':
             execute('delete from `acmers` where `id`=?', (id,))
+            flash('删除成功！')
+    else:
+        flash('我不明白你想做什么')
+    return redirect('/')
+
+@app.route('/')
+def index():
     acmers = Acmer.all_acmers()
     return render_template('index.html', acmers=acmers)
 
