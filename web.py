@@ -115,9 +115,9 @@ def check_id(id, password):
     urllib.request.install_opener(opener)
     try:
         req = urllib.request.Request('http://poj.org/login', ('user_id1=%s&password1=%s' % (id, password)).encode())
-        urllib.request.urlopen(req, timeout=3)
-        if re.search('Log Out', get_html('http://poj.org/login')) is None:
-            return False
+        with urllib.request.urlopen(req, timeout=3):
+            if re.search('Log Out', get_html('http://poj.org/login')) is None:
+                return False
         return True
     except:
         return False
@@ -160,7 +160,7 @@ def update(id):
         return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=80)
 
 
 
