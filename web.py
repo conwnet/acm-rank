@@ -1,5 +1,4 @@
 from flask import Flask, render_template, g, request
-from flask_bootstrap import Bootstrap
 from bs4 import BeautifulSoup
 import sqlite3
 import urllib
