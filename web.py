@@ -147,7 +147,6 @@ def updateall():
     acmers = Acmer.all_acmers()
     for acmer in acmers:
         acmer.update()
-    return render_template('index.html', acmers=acmers)
     return 'update successful!'
 
 @app.route('/update/<id>')
