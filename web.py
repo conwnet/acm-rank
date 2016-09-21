@@ -160,7 +160,7 @@ def update(id):
         return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port='80')
 
 
 
