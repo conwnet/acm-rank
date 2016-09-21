@@ -21,7 +21,7 @@
 		<td>操作</td>
 	<tr>
 {% for acmer in acmers %}
-	<tr>
+	<tr data-toggle="popover">
 		<td class="rank"></td>
 		<td>{{ acmer.id }}</td>
 		<td>{{ acmer.name }}</td>
@@ -31,40 +31,10 @@
 		<td>{{ acmer.last_week_solved }}</td>
 		<td>{{ acmer.last_submit_time }}</td>
 		<td>
-			<div class="btn-group">
-				<button class="btn btn-success dropdown-toggle" data-toggle="dropdown" onclick="$(:'input').onfocus()">更新</button>
-				<ul class="dropdown-menu">
-					<li>
-						<form method="post">
-						<input type="hidden" name="id" value="{{ acmer.id }}">
-						<input type="hidden" name="type" value="update">
-						<input type="password" name="password" class="form-control" placeholder="POJ Password" />
-						<input type="submit" class="btn btn-success" value="确定" />
-						</form>
-					</li>
-				</ul>
-			</div>
-			<div class="btn-group">
-				<button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">删除</button>
-				<ul class="dropdown-menu">
-					<li>
-						<form method="post">
-						<input type="hidden" name="id" value="{{ acmer.id }}">
-						<input type="hidden" name="type" value="delete">
-						<input type="password" name="password" class="form-control" placeholder="POJ Password" autofocus="true" />
-						<input type="submit" class="btn btn-success" value="确定" />
-						</form>
-					</li>
-				</ul>
-			</div>
-			<!--
-			<div>
-			<input type="password" class="form-control" placeholder="POJ Password" />
-			<input type="submit" class="btn btn-success" value="确定" onclick="this.hidden()" />
-			<input type="submit" class="btn btn-success" value="取消" />
-			</div>
-			-->
-		</td>
+			<button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form method='post'>
+						<input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ Password' /><input type='submit' class='btn btn-success btn-block' value='确定' /></form>">更新</button>
+			<button class="btn btn-danger" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form method='post'>
+						<input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='delete'><input type='password' name='password' class='form-control' placeholder='POJ Password' /><input type='submit' class='btn btn-success btn-block' value='确定' /></form>">删除</button>
 	</tr>
 {% endfor %}
 </table>
@@ -101,12 +71,9 @@
 	function update(id, password) {
 		
 	}
+	$(function (){
+		$("[data-toggle='popover']").popover();
+	});
 </script>
 </body>
 </html>
-
-
-
-
-
-

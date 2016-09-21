@@ -1,5 +1,4 @@
 from flask import Flask, render_template, g, request
-from flask_bootstrap import Bootstrap
 from bs4 import BeautifulSoup
 import sqlite3
 import urllib
@@ -103,10 +102,12 @@ class Acmer:
 
     @staticmethod
     def all_acmers():
-        acmers = []
-        for acmer in query('select id from acmers order by `solved` desc'):
-            acmers.append(Acmer.new(acmer['id']))
-        return acmers
+        all_acmers = []
+        acmers = query('select id from acmers order by `solved` desc')
+        if acmers is not None:
+            for acmer in acmers:
+                all_acmers.append(Acmer.new(acmer['id']))
+        return all_acmers
 
 def check_id(id, password):
     cp = urllib.request.HTTPCookieProcessor()
