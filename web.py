@@ -81,20 +81,18 @@ class Acmer:
             url = "http://poj.org/userstatus?user_id=" + self.id
             soup = BeautifulSoup(get_html(url), 'html.parser')
             self.solved = soup.find(text='Solved:').find_next().a.string
-            print(soup.find(text='Solved:').find_next().a.string)
             self.submissions = soup.find(text='Submissions:').find_next().a.string
             p_str = re.sub(r'\D', ' ', soup.find(text=re.compile(r'function p')))
             self.solved_problem_list = ' '.join(p_str.split())
-            submit_times = re.findall(r'<td>(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)</td>', get_html(url))
-            if submit_times is None:
+            submit_times = re.findall(r'<td>(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)</td>', get_html('http://poj.org/status?user_id=' + self.id))
+            if submit_times == []:
                 self.last_submit_time = '9999-12-31 23:59:59'
             else:
-                self.last_submit_time = submit_times
+                self.last_submit_time = submit_times[0]
             self.update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             self.save()
             return True
         except:
-            raise
             return False
     
     def save(self):
@@ -115,7 +113,7 @@ def check_id(id, password):
     urllib.request.install_opener(opener)
     try:
         req = urllib.request.Request('http://poj.org/login', ('user_id1=%s&password1=%s' % (id, password)).encode())
-        with urllib.request.urlopen(req, timeout=3):
+        with urllib.request.urlopen(req, timeout=5):
             if re.search('Log Out', get_html('http://poj.org/login')) is None:
                 return 1
         return 0
@@ -136,7 +134,8 @@ def handle():
                 name = request.form['name']
                 email = request.form['email']
                 execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
-                if Acmer.new(id).update():
+                acmer = Acmer.new(id)
+                if acmer is not None and acmer.update():
                     flash('添加成功！')
                 else:
                     flash('添加失败！')
