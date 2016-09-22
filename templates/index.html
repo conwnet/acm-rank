@@ -32,8 +32,8 @@
 		<td>{{ acmer.last_week_solved }}</td>
 		<td>{{ acmer.last_submit_time }}</td>
 		<td>
-			<button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="更新" data-html="true" data-content="<form action='/handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确定' /></form>">更新</button>
-			<button class="btn btn-danger" data-toggle="popover" data-placement="bottom" title="删除" data-html="true" data-content="<form action='handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='delete'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确定' /></form>">删除</button>
+			<button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="更新" data-html="true" data-content="<form action='/handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确认更新' /></form>">更新</button>
+			<button class="btn btn-danger" data-toggle="popover" data-placement="bottom" title="删除" data-html="true" data-content="<form action='handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='delete'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-danger btn-block' value='确认删除' /></form>">删除</button>
 	</tr>
 {% endfor %}
 </table>
