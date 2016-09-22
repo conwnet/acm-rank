@@ -81,6 +81,7 @@ class Acmer:
             url = "http://poj.org/userstatus?user_id=" + self.id
             soup = BeautifulSoup(get_html(url), 'html.parser')
             self.solved = soup.find(text='Solved:').find_next().a.string
+            print(soup.find(text='Solved:').find_next().a.string)
             self.submissions = soup.find(text='Submissions:').find_next().a.string
             p_str = re.sub(r'\D', ' ', soup.find(text=re.compile(r'function p')))
             self.solved_problem_list = ' '.join(p_str.split())
@@ -93,6 +94,7 @@ class Acmer:
             self.save()
             return True
         except:
+            raise
             return False
     
     def save(self):
@@ -134,13 +136,17 @@ def handle():
                 name = request.form['name']
                 email = request.form['email']
                 execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
-                Acmer.new(id).update()
-                flash('添加成功！')
+                if Acmer.new(id).update():
+                    flash('添加成功！')
+                else:
+                    flash('添加失败！')
         elif request.form['type'] == 'update':
             acmer = Acmer.new(id)
             if acmer is not None:
-                acmer.update()
-            flash('更新成功！')
+                if acmer.update():
+                    flash('更新成功！')
+                else:
+                    flash('更新失败！')
         elif request.form['type'] == 'delete':
             execute('delete from `acmers` where `id`=?', (id,))
             flash('删除成功！')
