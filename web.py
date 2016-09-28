@@ -197,6 +197,11 @@ def update(id):
         acmer.update()
         return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
 
+@app.route('/add/<id>/<name>/<email>')
+def add(id, name, email):
+    execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
+    return '添加成功！'
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
 
