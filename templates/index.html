@@ -27,9 +27,9 @@
 		<td>{{ acmer.id }}</td>
 		<td>{{ acmer.name }}</td>
 		<td>{{ acmer.email }}</td>
-		<td>{{ acmer.solved }}</td>
+		<td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.solved_problem_list }}">{{ acmer.solved }}</td>
 		<td>{{ acmer.submissions }}</td>
-		<td>{{ acmer.last_week_solved }}</td>
+		<td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.previous_solved_problem_list }}">{{ acmer.previous_solved }}</td>
 		<td>{{ acmer.last_submit_time }}</td>
 		<td>
 			<button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form action='/handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确认更新' /></form>">更新</button>

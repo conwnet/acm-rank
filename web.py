@@ -90,24 +90,28 @@ class Acmer:
                 self.last_submit_time = submit_times[0]
                 html = get_html('http://poj.org/status?&result=0&user_id=' + self.id)
                 submit_times = re.findall(r'<td>(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)</td>', html)
-                self.last_week_solved_problem_list = []
-                while len(submit_times) == 20 and time.mktime(time.strptime(submit_times.pop(), '%Y-%m-%d %H:%M:%S')) - time.time() < 604800:
-                    self.last_week_solved_problem_list += re.findall(r'<a href=problem\?id=\d\d\d\d>(\d\d\d\d)</a>', html)
+
+                self.previous_solved_problem_list = []
+                while len(submit_times) == 20 and time.time() - time.mktime(time.strptime(submit_times[-1], '%Y-%m-%d %H:%M:%S')) < 604800:
+                    self.previous_solved_problem_list += re.findall(r'<a href=problem\?id=\d\d\d\d>(\d\d\d\d)</a>', html)
                     next_page_urls = re.findall(r'Previous Page.*href=(.*)><font color=blue>Next Page', html)
                     html = get_html('http://poj.org/' + next_page_urls[0])
                     submit_times = re.findall(r'<td>(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)</td>', html)
+
                 page_valid_count = 0
                 for one_time in submit_times:
-                    page_valid_count += 1
-                    if time.mktime(time.strptime(one_time, '%Y-%m-%d %H:%M:%S')) - time.time() > 604800:
+                    if time.time() - time.mktime(time.strptime(one_time, '%Y-%m-%d %H:%M:%S')) > 604800:
                         break
-                self.last_week_solved_problem_list += re.findall(r'<a href=problem\?id=\d\d\d\d>(\d\d\d\d)</a>', html)[0:page_valid_count]
-                self.last_week_solved_problem_list = list(set(self.last_week_solved_problem_list))
-                self.last_week_solved = len(self.last_week_solved_problem_list)
-                self.last_week_solved_problem_list = ' '.join(self.last_week_solved_problem_list)
+                    page_valid_count += 1
+
+                self.previous_solved_problem_list += re.findall(r'<a href=problem\?id=\d\d\d\d>(\d\d\d\d)</a>', html)[0:page_valid_count]
+                self.previous_solved_problem_list = list(set(self.previous_solved_problem_list))
+                self.previous_solved = len(self.previous_solved_problem_list)
+                self.previous_solved_problem_list = ' '.join(self.previous_solved_problem_list)
             else:
                 self.last_submit_time = '9999-12-31 23:59:59'
-                self.last_week_solved = 0
+                self.previous_solved_problem_list = ''
+                self.previous_solved = 0
             self.update_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             self.save()
             return True
@@ -115,7 +119,7 @@ class Acmer:
             return False
     
     def save(self):
-        execute("update `acmers` set `name`=?, `email`=?, `submissions`=?, `solved`=?, `solved_problem_list`=?, `last_submit_time`=?, `previous_solved`, `previous_solved_problem_list`, `update_time`=?, `status`=? where `id`=?", (self.name, self.email, self.submissions, self.solved, self.solved_problem_list, self.last_submit_time, self.previous_solved, self.previous_solved_problem_list, self.update_time, self.status, self.id))
+        execute("update `acmers` set `name`=?, `email`=?, `submissions`=?, `solved`=?, `solved_problem_list`=?, `last_submit_time`=?, `previous_solved`=?, `previous_solved_problem_list`=?, `update_time`=?, `status`=? where `id`=?", (self.name, self.email, self.submissions, self.solved, self.solved_problem_list, self.last_submit_time, self.previous_solved, self.previous_solved_problem_list, self.update_time, self.status, self.id))
 
     @staticmethod
     def all_acmers():
@@ -182,7 +186,7 @@ def updateall():
     acmers = Acmer.all_acmers()
     for acmer in acmers:
         acmer.update()
-    return 'update successful!'
+    return '更新完成！'
 
 @app.route('/update/<id>')
 def update(id):
