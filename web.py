@@ -212,7 +212,8 @@ def add(id, name, email, password):
 def delete(id, password):
     if hash(password) != Acmer.new('0').name:
         return '密码错误！'
-    return 'ok!'
+    execute('delete from `acmers` where `id`=?', (id,))
+    return '删除成功！'
     
 
 if __name__ == '__main__':
