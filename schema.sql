@@ -8,7 +8,7 @@ create table `acmers` (
     `last_submit_time` text,
     `previous_solved` text,
     `previous_solved_problem_list` text,
-    `update_time` real,
+    `update_time` text,
     `status` int
 );
 
