@@ -1,9 +1,6 @@
 from flask import Flask, render_template, g, request, flash, redirect
 from bs4 import BeautifulSoup
-import sqlite3
-import urllib
-import time
-import re
+import sqlite3, urllib, hashlib, time, re
 
 app = Flask(__name__)
 app.secret_key = 'Author:netcon'
@@ -70,13 +67,6 @@ class Acmer:
         self.update_time = acmer['update_time']
         self.status = acmer['status']
     
-    @staticmethod
-    def new(id):
-        acmer = query('select * from `acmers` where id=?', (id,), one=True)
-        if acmer is None:
-            return None
-        return Acmer(acmer)
-
     def update(self):
         try:
             url = "http://poj.org/userstatus?user_id=" + self.id
@@ -122,9 +112,16 @@ class Acmer:
         execute("update `acmers` set `name`=?, `email`=?, `submissions`=?, `solved`=?, `solved_problem_list`=?, `last_submit_time`=?, `previous_solved`=?, `previous_solved_problem_list`=?, `update_time`=?, `status`=? where `id`=?", (self.name, self.email, self.submissions, self.solved, self.solved_problem_list, self.last_submit_time, self.previous_solved, self.previous_solved_problem_list, self.update_time, self.status, self.id))
 
     @staticmethod
+    def new(id):
+        acmer = query('select * from `acmers` where id=?', (id,), one=True)
+        if acmer is None:
+            return None
+        return Acmer(acmer)
+
+    @staticmethod
     def all_acmers():
         all_acmers = []
-        acmers = query('select id from acmers order by `solved` desc')
+        acmers = query('select id from acmers where `status`=1 order by `solved` desc')
         if acmers is not None:
             for acmer in acmers:
                 all_acmers.append(Acmer.new(acmer['id']))
@@ -156,7 +153,7 @@ def handle():
             if Acmer.new(id) is None:
                 name = request.form['name']
                 email = request.form['email']
-                execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
+                execute('insert into `acmers` (`id`, `name`, `email`, `status`) values (?, ?, ?, 1)', (id, name, email))
                 acmer = Acmer.new(id)
                 if acmer is not None and acmer.update():
                     flash('添加成功！')
@@ -176,31 +173,47 @@ def handle():
         flash('我不明白你想做什么')
     return redirect('/')
 
+def hash(password):
+    return hashlib.sha256((password + '+' + app.secret_key).encode()).hexdigest()
+
 @app.route('/')
 def index():
     acmers = Acmer.all_acmers()
-    return render_template('index.html', acmers=acmers)
+    return render_template('index.html', acmers=acmers, update_time=Acmer.new('0').update_time)
 
-@app.route('/updateall')
-def updateall():
+@app.route('/updateall/<password>')
+def updateall(password):
+    if hash(password) != Acmer.new('0').name:
+        return '密码错误！'
     acmers = Acmer.all_acmers()
     for acmer in acmers:
         acmer.update()
     return '更新完成！'
 
-@app.route('/update/<id>')
-def update(id):
-    acmer = Acmer.new(id)
+@app.route('/update/<id>/<password>')
+def update(id, password):
+    if hash(password) != Acmer.new('0').name:
+        return '密码错误！'
+    acmer = Acmer.new(id, password)
     if acmer is None:
         return 'id不正确！'
     else:
         acmer.update()
         return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
 
-@app.route('/add/<id>/<name>/<email>')
-def add(id, name, email):
+@app.route('/add/<id>/<name>/<email>/<password>')
+def add(id, name, email, password):
+    if hash(password) != Acmer.new('0').name:
+        return '密码错误！'
     execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
     return '添加成功！'
+
+@app.route('/delete/<id>/<password>')
+def delete(id, password):
+    if hash(password) != Acmer.new('0').name:
+        return '密码错误！'
+    return 'ok!'
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True)
