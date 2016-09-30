@@ -188,6 +188,7 @@ def updateall(password):
     acmers = Acmer.all_acmers()
     for acmer in acmers:
         acmer.update()
+        execute("update `acmers` set `update_time`=? where `id`='0'", (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), ))
     return '更新完成！'
 
 @app.route('/update/<id>/<password>')

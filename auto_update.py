@@ -5,11 +5,7 @@ def auto_update():
     for i in range(3):
         try:
             with urllib.request.urlopen(request, timeout=600):
-                pass
-            with sqlite3.connect('database.db') as db:
-                db.execute("update `acmers` set `update_time`=? where `id`='0'", (time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())), ))
-                db.commit()
-            return True
+                return True
         except:
             pass
     return False
