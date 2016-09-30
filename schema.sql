@@ -6,7 +6,7 @@ create table `acmers` (
     `solved` int,
     `solved_problem_list` text,
     `last_submit_time` text,
-    `previous_solved` text,
+    `previous_solved` int,
     `previous_solved_problem_list` text,
     `update_time` text,
     `status` int

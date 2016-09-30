@@ -121,7 +121,7 @@ class Acmer:
     @staticmethod
     def all_acmers():
         all_acmers = []
-        acmers = query('select id from acmers where `status`=1 order by `solved` desc')
+        acmers = query('select id from acmers where `status`=1 order by `previous_solved` desc, `solved` desc')
         if acmers is not None:
             for acmer in acmers:
                 all_acmers.append(Acmer.new(acmer['id']))

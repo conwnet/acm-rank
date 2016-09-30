@@ -14,5 +14,5 @@ while True:
     if auto_update():
         print('all data have updated...')
     else:
-        print('some error geted...')
+        print('update faild...')
     time.sleep(21600)
