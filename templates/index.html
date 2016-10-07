@@ -11,82 +11,82 @@
 <h1 class="text-center">SAU ACM Team</h1>
 <h3 class="text-center">更新时间：{{ update_time }}</h3>
 <table class="table table-hover">
-	<tr>
-		<td>排名</td>
-		<td>ID</td>
-		<td>姓名</td>
-		<td>电子邮件</td>
-		<td>解决问题总数</td>
-		<td>总提交数</td>
-		<td>上周解决数量</td>
-		<td>最后提交时间</td>
-		<td>操作</td>
-	<tr>
+    <tr>
+        <td>排名</td>
+        <td>ID</td>
+        <td>姓名</td>
+        <td>电子邮件</td>
+        <td>解决问题总数</td>
+        <td>总提交数</td>
+        <td>上周解决数量</td>
+        <td>最后提交时间</td>
+        <td>操作</td>
+    <tr>
 {% for acmer in acmers %}
-	<tr data-toggle="popover">
-		<td class="rank"></td>
-		<td>{{ acmer.id }}</td>
-		<td>{{ acmer.name }}</td>
-		<td>{{ acmer.email }}</td>
-		<td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.solved_problem_list }}">{{ acmer.solved }}</td>
-		<td>{{ acmer.submissions }}</td>
-		<td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.previous_solved_problem_list }}">{{ acmer.previous_solved }}</td>
-		<td>{{ acmer.last_submit_time }}</td>
-		<td>
-			<button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form action='/handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确认更新' /></form>">更新</button>
-			<button class="btn btn-danger" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form action='handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='delete'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-danger btn-block' value='确认删除' /></form>">删除</button>
-	</tr>
+    <tr data-toggle="popover">
+        <td class="rank"></td>
+        <td>{{ acmer.id }}</td>
+        <td>{{ acmer.name }}</td>
+        <td>{{ acmer.email }}</td>
+        <td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.solved_problem_list }}">{{ acmer.solved }}</td>
+        <td>{{ acmer.submissions }}</td>
+        <td><a href="javascript:void(0)" data-toggle="popover" data-placement="bottom" data-content="{{ acmer.previous_solved_problem_list }}">{{ acmer.previous_solved }}</td>
+        <td>{{ acmer.last_submit_time }}</td>
+        <td>
+            <button class="btn btn-success" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form action='/handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='update'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-success btn-block' value='确认更新' /></form>">更新</button>
+            <button class="btn btn-danger" data-toggle="popover" data-placement="bottom" title="请输入POJ密码" data-html="true" data-content="<form action='handle' method='post'><input type='hidden' name='id' value='{{ acmer.id }}'><input type='hidden' name='type' value='delete'><input type='password' name='password' class='form-control' placeholder='POJ密码' /><input type='submit' class='btn btn-danger btn-block' value='确认删除' /></form>">删除</button>
+    </tr>
 {% endfor %}
 </table>
 <button type="button" class="btn btn-primary btn-lg center-block" data-toggle="modal" data-target="#myModal">我要加入！</button>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-sm">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel">信息确认</h4>
-			</div>
-			<form action='handle' method="post">
-				<div class="modal-body">
-					<input type="hidden" name="type" value="add">
-					<label>姓名：</label><input type="text" name="name" class="form-control" placeholder="">
-					<label>电子邮件：</label><input type="email" name="email" class="form-control" placeholder="">
-					<label>POJ帐号：</label><input type="text" name="id" class="form-control" placeholder="">
-					<label>POJ密码：</label><input type="password" name="password" class="form-control" placeholder="">
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<input type="submit" class="btn btn-primary" value="提交">
-				</div>
-			</form>
-		</div>
-	</div>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">信息确认</h4>
+            </div>
+            <form action='handle' method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="type" value="add">
+                    <label>姓名：</label><input type="text" name="name" class="form-control" placeholder="">
+                    <label>电子邮件：</label><input type="email" name="email" class="form-control" placeholder="">
+                    <label>POJ帐号：</label><input type="text" name="id" class="form-control" placeholder="">
+                    <label>POJ密码：</label><input type="password" name="password" class="form-control" placeholder="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <input type="submit" class="btn btn-primary" value="提交">
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for message in messages %}
 <div class="modal fade flash-alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-body inline-block">
-			{{ message }}
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body inline-block">
+            {{ message }}
+            </div>
+        </div>
+    </div>
 </div>
 {% endfor %}
 {% endif %}
 {% endwith %}
 </div>
 <script>
-	var ranks = document.getElementsByClassName('rank');
-	for(var i = 0; i < ranks.length; i++) {
-		ranks[i].innerHTML = i + 1;
-	}
-	$(function (){
-		$("[data-toggle='popover']").popover();
-		$('.flash-alert').modal('show')
-	});
+    var ranks = document.getElementsByClassName('rank');
+    for(var i = 0; i < ranks.length; i++) {
+        ranks[i].innerHTML = i + 1;
+    }
+    $(function (){
+        $("[data-toggle='popover']").popover();
+        $('.flash-alert').modal('show')
+    });
 </script>
 </body>
 </html>
