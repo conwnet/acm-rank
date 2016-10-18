@@ -206,7 +206,7 @@ def update(id, password):
 def add(id, name, email, password):
     if hash(password) != Acmer.new('0').name:
         return '密码错误！'
-    execute('insert into `acmers` (`id`, `name`, `email`) values (?, ?, ?)', (id, name, email))
+    execute('insert into `acmers` (`id`, `name`, `email`, `status`) values (?, ?, ?, 1)', (id, name, email))
     return '添加成功！'
 
 @app.route('/delete/<id>/<password>')
