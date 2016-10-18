@@ -200,7 +200,7 @@ def update(id, password):
         return 'id不正确！'
     else:
         acmer.update()
-        return str(acmer.solved) + ' ' +  str(acmer.last_submit_time)
+        return '更新完成！'
 
 @app.route('/add/<id>/<name>/<email>/<password>')
 def add(id, name, email, password):
