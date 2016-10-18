@@ -195,7 +195,7 @@ def updateall(password):
 def update(id, password):
     if hash(password) != Acmer.new('0').name:
         return '密码错误！'
-    acmer = Acmer.new(id, password)
+    acmer = Acmer.new(id)
     if acmer is None:
         return 'id不正确！'
     else:
