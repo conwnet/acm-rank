@@ -197,15 +197,16 @@ def update(id, password):
         return '密码错误！'
     acmer = Acmer.new(id)
     if acmer is None:
-        return 'id不正确！'
-    else:
-        acmer.update()
-        return '更新完成！'
+        return '用户不存在！'
+    acmer.update()
+    return '更新完成！'
 
 @app.route('/add/<id>/<name>/<email>/<password>')
 def add(id, name, email, password):
     if hash(password) != Acmer.new('0').name:
         return '密码错误！'
+    if Acmer.new(id):
+        return '用户已存在！'
     execute('insert into `acmers` (`id`, `name`, `email`, `status`) values (?, ?, ?, 1)', (id, name, email))
     return '添加成功！'
 
@@ -213,12 +214,14 @@ def add(id, name, email, password):
 def delete(id, password):
     if hash(password) != Acmer.new('0').name:
         return '密码错误！'
+    if Acmer.new(id) is None:
+        return '用户不存在！'
     execute('delete from `acmers` where `id`=?', (id,))
     return '删除成功！'
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True)
+    app.run(host='0.0.0.0', port=80)
 
 
 
